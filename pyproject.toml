@@ -1,0 +1,22 @@
+[project]
+name = "pf-grpo"
+version = "0.1.0"
+description = "Particle-filtered LoRA GRPO smoke experiments."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=3.0",
+    "math-verify>=0.9.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.11", "ty>=0.0.1a20"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+exclude = ["unsloth_compiled_cache"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

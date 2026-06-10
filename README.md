@@ -48,6 +48,7 @@ To solve the problem, we need to determine the equations...by the four points is
 To solve the problem, we need to determine the equations...by the four points is:\n\\[\n\\boxed{\\frac{192\\sqrt{14}}{25}}.\n\\]
 We need to find the area of the quadrilateral formed...by the four points is:\n\\[\n\\boxed{\\frac{192\\sqrt{14}}{25}}.\n\\]
 We need to find the area of the quadrilateral formed...by the four points is:\n\\[\n\\boxed{\\frac{192\\sqrt{14}}{25}}.\n\\]
+...
 ```
 
 Combined with (i): even with some diversity of answers, all answers were either correct or incorrect. So, the reward was uniform for all trajectories, leading to no GRPO update. The reason is that GRPO computes advantages by normalizing rewards within each group--subtracting the mean and dividing by the standard deviation. When all rewards are the same, the standard deviation is zero and every advantage is zero, so the gradient vanishes.

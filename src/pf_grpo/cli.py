@@ -36,7 +36,7 @@ def main() -> None:
     result = lora_grpo(
         model_path=args.base_model,
         ckpt_output_dir=str(run_dir / "checkpoints"),
-        tasks=rollout_tasks(load_math_tasks(args.dataset, args.seed)[: args.prompts_per_update], args),
+        tasks=rollout_tasks(load_math_tasks(args.dataset, args.seed), args),
         backend="art",
         num_iterations=args.num_iterations,
         group_size=args.rollouts_per_prompt,

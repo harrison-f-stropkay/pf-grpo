@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from pf_grpo.compat import patch_runtime_deps
 from pf_grpo.core import load_math_tasks, rollout_fn, rollout_tasks, trajectory_group_fn
 
 
@@ -29,6 +30,7 @@ def main() -> None:
 
     hook = {"rollout_fn": rollout_fn} if args.method == "vanilla" else {"trajectory_group_fn": trajectory_group_fn}
 
+    patch_runtime_deps()
     from training_hub.algorithms.lora_grpo import lora_grpo
 
     result = lora_grpo(

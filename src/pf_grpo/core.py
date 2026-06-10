@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import random
 from argparse import Namespace
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Mapping, cast
 
 import math_verify
@@ -57,6 +59,18 @@ def reward_math(response: str, task: Task) -> float:
     return float(math_verify.verify(math_verify.parse(task.answer), math_verify.parse(response)))
 
 
+def log_rollouts(config: Namespace, task: Task, responses: list[str], rewards: list[float]) -> None:
+    path = Path(config.run_dir) / "rollouts.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        f.write(json.dumps({
+            "problem": task.problem,
+            "answer": task.answer,
+            "rewards": rewards,
+            "responses": responses,
+        }) + "\n")
+
+
 class ItsHubPolicyAdapter:
     def __init__(self, model, config: Namespace):
         self.model = model
@@ -103,8 +117,10 @@ async def vanilla_rollout(model, task: Task, config: Namespace):
         max_tokens=config.max_tokens,
     )
     choice = response.choices[0]
+    content = choice.message.content or ""
     trajectory = Trajectory(messages_and_choices=[*messages, choice])
-    trajectory.reward = reward_math(choice.message.content or "", task)
+    trajectory.reward = reward_math(content, task)
+    log_rollouts(config, task, [content], [trajectory.reward])
     return trajectory
 
 
@@ -128,11 +144,12 @@ async def pf_trajectory_group(model, task: Task, group_size: int, config: Namesp
         return_response_only=False,
     )
 
-    trajectories = [
-        Trajectory(messages_and_choices=[*messages, response]) for response in result.responses
-    ]
-    for trajectory, response in zip(trajectories, result.responses):
-        trajectory.reward = reward_math(str(response.get("content") or ""), task)
+    responses = [str(response.get("content") or "") for response in result.responses]
+    rewards = [reward_math(response, task) for response in responses]
+    trajectories = [Trajectory(messages_and_choices=[*messages, response]) for response in result.responses]
+    for trajectory, reward in zip(trajectories, rewards):
+        trajectory.reward = reward
+    log_rollouts(config, task, responses, rewards)
     return TrajectoryGroup(trajectories)
 
 

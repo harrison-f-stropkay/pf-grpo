@@ -39,7 +39,7 @@ I hadn't accounted for two aspects of my experiments: (i) my reward model was bi
 
 For (ii), PF produced as few as one distinct answer per question, offering no signal to GRPO. To see why, consider a rollout of size 16. Even if the PRM is useless, assigning equal weight to every candidate at each step, we expect only about 10 distinct particles:
 
-$$\operatorname{E}[n_{\text{particles}}]=16\left(1-\left(\frac{15}{16}\right)^{16}\right)\approx 10.29$$
+$$\mathbb{E}[n_{\text{particles}}]=16\left(1-\left(\frac{15}{16}\right)^{16}\right)\approx 10.29$$
 
 Of course, each particle will likely generate a distinct candidate at the next reasoning step, but this stands in opposition to the fact that the PRM is likely better than random sampling, meaning a strong PRM concentrates weight on a small number of particles, driving the effective sample size toward 1. This effect was compounded as PF continued, yielding trajectory groups like the following:
 
